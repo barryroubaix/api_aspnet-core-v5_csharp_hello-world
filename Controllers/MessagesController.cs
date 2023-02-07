@@ -30,7 +30,7 @@ namespace App.Controllers
         }
 
         [HttpGet("admin")]
-        [Authorize]
+        [Authorize("read:admin-messages")]
         public ActionResult<Message> GetAdminMessage()
         {
             return _messageService.GetAdminMessage();

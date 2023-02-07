@@ -1,7 +1,9 @@
 using System;
+using App.Authorization;
 using App.Middlewares;
 using App.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -24,6 +26,7 @@ namespace App
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IMessageService, MessageService>();
+            services.AddSingleton<IAuthorizationHandler, RbacHandler>();
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(policy =>
@@ -55,6 +58,14 @@ namespace App
                         ValidateIssuerSigningKey = true
                     };
                 });
+            services.AddAuthorization(options =>
+                {
+                    options.AddPolicy("read:admin-messages", policy =>
+                    {
+                        policy.Requirements.Add(new RbacRequirement("read:admin-messages"));
+                    });
+                });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -32,6 +32,14 @@ namespace App.Middlewares
                                             : "Requires authentication"
                         });
                 }
+                else if (context.Response is HttpResponse forbiddenResponse && forbiddenResponse.StatusCode == 403)
+                {
+                    await forbiddenResponse.WriteAsJsonAsync(new {
+                        error = "insufficient_permissions",
+                        error_description = "Insufficient permissions to access resource",
+                        message = "Permission denied"
+                    });
+                }
             }
             catch (Exception ex)
             {
